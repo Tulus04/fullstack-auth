@@ -136,13 +136,13 @@ const Items = () => {
                 </Card>
             )}
 
-\            {!showForm && (
+            {!showForm && (
                 <Button variant="success" size="lg" className="mb-4 w-100" onClick={() => handleShowForm()}>
                     ➕ Tambah Item Baru
                 </Button>
             )}
 
-\            <h5 className="mb-3">📋 Daftar Items ({items.length})</h5>
+            <h5 className="mb-3">📋 Daftar Items ({items.length})</h5>
             {loading && items.length === 0 ? (
                 <p>Loading...</p>
             ) : items.length === 0 ? (
