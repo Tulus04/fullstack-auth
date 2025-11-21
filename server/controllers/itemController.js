@@ -27,10 +27,8 @@ exports.createItem = async (req, res) => {
 
 exports.getAllItems = async (req, res) => {
     try {
-        const userId = req.user.id;
-
         const items = await Item.findAll({
-            where: { UserId: userId }
+            include: ['User']
         });
 
         return res.status(200).json({
@@ -46,10 +44,10 @@ exports.getAllItems = async (req, res) => {
 exports.getItemById = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.id;
 
         const item = await Item.findOne({
-            where: { id, UserId: userId }
+            where: { id },
+            include: ['User']
         });
 
         if (!item) {
@@ -73,11 +71,15 @@ exports.updateItem = async (req, res) => {
         const userId = req.user.id;
 
         const item = await Item.findOne({
-            where: { id, UserId: userId }
+            where: { id }
         });
 
         if (!item) {
             return res.status(404).json({ message: 'Item tidak ditemukan' });
+        }
+
+        if (item.UserId !== userId) {
+            return res.status(403).json({ message: 'Anda tidak memiliki akses untuk mengubah item ini' });
         }
 
         if (name) item.name = name;
@@ -101,11 +103,15 @@ exports.deleteItem = async (req, res) => {
         const userId = req.user.id;
 
         const item = await Item.findOne({
-            where: { id, UserId: userId }
+            where: { id }
         });
 
         if (!item) {
             return res.status(404).json({ message: 'Item tidak ditemukan' });
+        }
+
+        if (item.UserId !== userId) {
+            return res.status(403).json({ message: 'Anda tidak memiliki akses untuk menghapus item ini' });
         }
 
         await item.destroy();

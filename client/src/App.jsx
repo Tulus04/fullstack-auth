@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Items from "./pages/Items";
+import Posts from "./pages/Posts";
 
 function App() {
 
@@ -26,6 +27,11 @@ function App() {
           <Route path="/items" element={
             <PrivateRoute>
               <Items />
+            </PrivateRoute>
+          } />
+          <Route path="/posts" element={
+            <PrivateRoute>
+              <Posts />
             </PrivateRoute>
           } />
         </Routes>

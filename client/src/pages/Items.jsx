@@ -153,8 +153,9 @@ const Items = () => {
                         <thead className="bg-dark text-white">
                             <tr>
                                 <th style={{ width: '5%' }}>No</th>
-                                <th style={{ width: '45%' }}>Nama Item</th>
-                                <th style={{ width: '20%' }}>Stock</th>
+                                <th style={{ width: '35%' }}>Nama Item</th>
+                                <th style={{ width: '15%' }}>Stock</th>
+                                <th style={{ width: '15%' }}>Pemilik</th>
                                 <th style={{ width: '30%' }}>Action</th>
                             </tr>
                         </thead>
@@ -166,6 +167,7 @@ const Items = () => {
                                     <td>
                                         <span className="badge bg-info">{item.stock}</span>
                                     </td>
+                                    <td>{item.User?.username || '-'}</td>
                                     <td>
                                         <Button
                                             variant="warning"

@@ -4,6 +4,7 @@ const { sequelize } = require("./models");
 
 const authRoute = require("./routes/authRoute");
 const itemRoute = require("./routes/itemRoute");
+const postRoute = require("./routes/postRoute");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", authRoute);
 app.use("/items", itemRoute);
+app.use("/posts", postRoute);
 
 const PORT = 3000;
 

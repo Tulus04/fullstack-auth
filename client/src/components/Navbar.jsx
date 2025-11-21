@@ -27,6 +27,9 @@ const Navbar = () => {
                                 <Nav.Link as={Link} to="/items" className="fw-500">
                                     Items
                                 </Nav.Link>
+                                <Nav.Link as={Link} to="/posts" className="fw-500">
+                                    Posts
+                                </Nav.Link>
                                 <span className="text-light border-start ps-3">
                                     Halo, <strong>{user.username}</strong>
                                 </span>
