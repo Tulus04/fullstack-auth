@@ -1,6 +1,5 @@
 const { Item } = require('../models');
 
-// Create Item
 exports.createItem = async (req, res) => {
     try {
         const { name, stock } = req.body;
@@ -26,7 +25,6 @@ exports.createItem = async (req, res) => {
     }
 };
 
-// Get All Items for User
 exports.getAllItems = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -45,7 +43,6 @@ exports.getAllItems = async (req, res) => {
     }
 };
 
-// Get Item by ID
 exports.getItemById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -69,7 +66,6 @@ exports.getItemById = async (req, res) => {
     }
 };
 
-// Update Item
 exports.updateItem = async (req, res) => {
     try {
         const { id } = req.params;
@@ -99,7 +95,6 @@ exports.updateItem = async (req, res) => {
     }
 };
 
-// Delete Item
 exports.deleteItem = async (req, res) => {
     try {
         const { id } = req.params;

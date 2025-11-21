@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Form, Button, Table, Alert, Modal } from 'react-bootstrap';
+import { Container, Form, Button, Table, Alert, Card } from 'react-bootstrap';
 import itemService from '../services/itemService';
 import { AuthContext } from '../context/AuthContext';
 
@@ -8,12 +8,11 @@ const Items = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [showModal, setShowModal] = useState(false);
+    const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({ name: '', stock: '' });
     const { user } = useContext(AuthContext);
 
-    // Fetch items on mount
     useEffect(() => {
         fetchItems();
     }, []);
@@ -31,7 +30,7 @@ const Items = () => {
         }
     };
 
-    const handleShowModal = (item = null) => {
+    const handleShowForm = (item = null) => {
         if (item) {
             setEditingId(item.id);
             setFormData({ name: item.name, stock: item.stock });
@@ -39,11 +38,11 @@ const Items = () => {
             setEditingId(null);
             setFormData({ name: '', stock: '' });
         }
-        setShowModal(true);
+        setShowForm(true);
     };
 
-    const handleCloseModal = () => {
-        setShowModal(false);
+    const handleCloseForm = () => {
+        setShowForm(false);
         setEditingId(null);
         setFormData({ name: '', stock: '' });
     };
@@ -58,15 +57,13 @@ const Items = () => {
         try {
             setLoading(true);
             if (editingId) {
-                // Update item
                 await itemService.updateItem(editingId, formData);
                 setSuccess('Item berhasil diperbarui');
             } else {
-                // Create item
                 await itemService.createItem(formData);
                 setSuccess('Item berhasil ditambahkan');
             }
-            handleCloseModal();
+            handleCloseForm();
             fetchItems();
         } catch (err) {
             setError(err.message || 'Gagal menyimpan item');
@@ -97,86 +94,101 @@ const Items = () => {
             {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
             {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
 
-            <Button variant="primary" className="mb-3" onClick={() => handleShowModal()}>
-                Tambah Item
-            </Button>
+            {showForm && (
+                <Card className="shadow-sm mb-4">
+                    <Card.Header className="bg-primary text-white">
+                        <h5 className="mb-0">{editingId ? 'Edit Item' : 'Tambah Item Baru'}</h5>
+                    </Card.Header>
+                    <Card.Body>
+                        <Form onSubmit={handleSubmit}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Nama Item</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="name"
+                                    placeholder="Masukkan nama item"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Stock</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    name="stock"
+                                    placeholder="Masukkan jumlah stock"
+                                    value={formData.stock}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </Form.Group>
+                            <div className="d-flex gap-2">
+                                <Button variant="primary" type="submit" disabled={loading}>
+                                    {loading ? 'Menyimpan...' : editingId ? 'Perbarui' : 'Tambah'}
+                                </Button>
+                                <Button variant="secondary" onClick={handleCloseForm}>
+                                    Batal
+                                </Button>
+                            </div>
+                        </Form>
+                    </Card.Body>
+                </Card>
+            )}
 
+\            {!showForm && (
+                <Button variant="success" size="lg" className="mb-4 w-100" onClick={() => handleShowForm()}>
+                    ➕ Tambah Item Baru
+                </Button>
+            )}
+
+\            <h5 className="mb-3">📋 Daftar Items ({items.length})</h5>
             {loading && items.length === 0 ? (
                 <p>Loading...</p>
             ) : items.length === 0 ? (
                 <Alert variant="info">Tidak ada items. Silakan tambah item baru.</Alert>
             ) : (
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Item</th>
-                            <th>Stock</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.map((item, index) => (
-                            <tr key={item.id}>
-                                <td>{index + 1}</td>
-                                <td>{item.name}</td>
-                                <td>{item.stock}</td>
-                                <td>
-                                    <Button
-                                        variant="warning"
-                                        size="sm"
-                                        className="me-2"
-                                        onClick={() => handleShowModal(item)}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="danger"
-                                        size="sm"
-                                        onClick={() => handleDelete(item.id)}
-                                    >
-                                        Hapus
-                                    </Button>
-                                </td>
+                <div className="table-responsive">
+                    <Table striped bordered hover className="shadow-sm">
+                        <thead className="bg-dark text-white">
+                            <tr>
+                                <th style={{ width: '5%' }}>No</th>
+                                <th style={{ width: '45%' }}>Nama Item</th>
+                                <th style={{ width: '20%' }}>Stock</th>
+                                <th style={{ width: '30%' }}>Action</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {items.map((item, index) => (
+                                <tr key={item.id}>
+                                    <td>{index + 1}</td>
+                                    <td>{item.name}</td>
+                                    <td>
+                                        <span className="badge bg-info">{item.stock}</span>
+                                    </td>
+                                    <td>
+                                        <Button
+                                            variant="warning"
+                                            size="sm"
+                                            className="me-2"
+                                            onClick={() => handleShowForm(item)}
+                                        >
+                                            ✏️ Edit
+                                        </Button>
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            onClick={() => handleDelete(item.id)}
+                                        >
+                                            🗑️ Hapus
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </div>
             )}
-
-            {/* Modal */}
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{editingId ? 'Edit Item' : 'Tambah Item'}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Nama Item</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Stock</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="stock"
-                                value={formData.stock}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Button variant="primary" type="submit" disabled={loading}>
-                            {loading ? 'Menyimpan...' : 'Simpan'}
-                        </Button>
-                    </Form>
-                </Modal.Body>
-            </Modal>
         </Container>
     );
 };
